@@ -1,0 +1,16 @@
+# canRL - Requirements
+
+# Core
+gymnasium>=0.29.0
+numpy>=1.24.0
+torch>=2.0.0
+
+# Logging & Visualization
+tensorboard>=2.14.0
+
+# Configuration
+pyyaml>=6.0
+
+# Development (optional)
+pytest>=7.0.0
+pytest-cov>=4.0.0
