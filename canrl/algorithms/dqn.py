@@ -25,11 +25,10 @@ from canrl.networks.mlp import MLP
 from canrl.utils.schedule import LinearSchedule
 
 
-class DQNAgent(BaseAgent):
+class DQN(BaseAgent):
     """
     Deep Q-Network Agent.
     
-    TODO: Implement the DQN algorithm.
     
     Key components to implement:
     1. Q-network and target network
@@ -37,14 +36,7 @@ class DQNAgent(BaseAgent):
     3. TD loss computation
     4. Target network updates (soft or hard)
     
-    Example usage (after you implement):
-        >>> agent = DQNAgent(
-        ...     state_dim=4,
-        ...     action_dim=2,
-        ...     hidden_dims=(64, 64),
-        ... )
-        >>> action = agent.select_action(state)
-        >>> metrics = agent.update(batch)
+
     """
     
     def __init__(
@@ -95,12 +87,10 @@ class DQNAgent(BaseAgent):
         self.target_network = MLP(state_dim, action_dim, hidden_dims, nn.RELU).to(device)
         self.target_network.load_state_dict(self.q_network)
         
-        # TODO: Create optimizer
-        # Hint: self.optimizer = optim.Adam(self.q_network.parameters(), lr=learning_rate)
-        self.optimizer = None  # YOUR CODE HERE
-        self.optimizer = nn.optim.Adam(self.q_network.parameters(), lr=x)
+        # used Adam as a generalized practice can be parameterized in the future
+        self.optimizer = nn.optim.Adam(self.q_network.parameters(), lr=learning_rate)
         
-        # Exploration schedule
+        # Exploration schedule epsilon greedy with linear decay as a simple baseline
         self.epsilon_schedule = LinearSchedule(
             epsilon_start, epsilon_end, epsilon_decay_steps
         )
@@ -108,10 +98,7 @@ class DQNAgent(BaseAgent):
         self._step = 0
         self._training = True
         
-        raise NotImplementedError(
-            "DQNAgent not implemented yet! "
-            "Edit this file to add your implementation."
-        )
+
     
     def select_action(self, state: np.ndarray, deterministic: bool = False) -> int:
         """
@@ -126,18 +113,18 @@ class DQNAgent(BaseAgent):
         Returns:
             Selected action index.
         """
-        # YOUR CODE HERE
-        # Hint:
-        # epsilon = 0.0 if deterministic else self.epsilon_schedule(self._step)
-        # 
-        # if np.random.random() < epsilon:
-        #     return np.random.randint(self.action_dim)
-        # 
-        # with torch.no_grad():
-        #     state_t = torch.FloatTensor(state).unsqueeze(0).to(self.device)
-        #     q_values = self.q_network(state_t)
-        #     return q_values.argmax(dim=1).item()
-        raise NotImplementedError()
+
+        epsilon = 0.0  if deterministic else self.epsilon_schedule(self._step)
+        if np.random.random() < epsilon:
+            # if random exp is triggered by the random var -> sample from uniform random distrbution
+            return np.random.randint(self.action_dim)
+
+        #otherwise get q vals -> argmax 
+        with torch.no_grad():
+            state_t = torch.FloatTensor(state).unsqueeze(0).to(self._step)
+            q_vals = self.q_network(state_t)
+            return q_vals.argmax(dim=1).item()
+        
     
     def update(self, batch: Batch) -> dict[str, float]:
         """
@@ -151,48 +138,14 @@ class DQNAgent(BaseAgent):
         3. Compute TD loss
         4. Backprop and optimize
         5. Periodically update target network
-        
         Returns:
             Dictionary with training metrics.
         """
-        # YOUR CODE HERE
-        # Hint:
-        # self._step += 1
         # 
-        # # Convert to tensors
-        # states = torch.FloatTensor(batch.states).to(self.device)
-        # actions = torch.LongTensor(batch.actions).to(self.device)
-        # rewards = torch.FloatTensor(batch.rewards).to(self.device)
-        # next_states = torch.FloatTensor(batch.next_states).to(self.device)
-        # dones = torch.FloatTensor(batch.dones).to(self.device)
-        # 
-        # # Current Q-values
-        # current_q = self.q_network(states)
-        # current_q = current_q.gather(1, actions.unsqueeze(1)).squeeze(1)
-        # 
-        # # Target Q-values
-        # with torch.no_grad():
-        #     next_q = self.target_network(next_states)
-        #     max_next_q = next_q.max(dim=1)[0]
-        #     targets = rewards + self.gamma * (1 - dones) * max_next_q
-        # 
-        # # Loss
-        # loss = nn.functional.mse_loss(current_q, targets)
-        # 
-        # # Optimize
-        # self.optimizer.zero_grad()
-        # loss.backward()
-        # self.optimizer.step()
-        # 
-        # # Update target network
-        # if self._step % self.target_update_frequency == 0:
-        #     self._update_target_network()
-        # 
-        # return {
-        #     "loss": loss.item(),
-        #     "q_mean": current_q.mean().item(),
-        #     "epsilon": self.epsilon_schedule(self._step),
-        # }
+        # ill get target as that and the q vals and use the batch backprop 
+        # let me 
+        
+        
         raise NotImplementedError()
     
     def _update_target_network(self) -> None:

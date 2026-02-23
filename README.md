@@ -1,31 +1,31 @@
-# canRL 🎮
+# canRL 
 
-> ⚠️ **Work in Progress** - This framework is under active development. Core infrastructure is functional, but algorithms are still being implemented.
+>  **Work in Progress** - This framework is under active development. Core infrastructure is functional, but algorithms are still being implemented.
 
 A modular Reinforcement Learning framework for building and experimenting with RL algorithms.
 
 ## Vision
 
 canRL aims to provide a complete, production-ready RL framework with:
-- 🧱 **Modular Components** - Environment wrappers, replay buffers, neural networks
-- 🚀 **Training Infrastructure** - Trainer, evaluator, callbacks, and logging
-- 🎯 **Algorithm Library** - Common RL algorithms (DQN, PPO, SAC, etc.) *(in progress)*
-- 📊 **Experiment Tools** - TensorBoard logging, checkpointing, configuration management
-- 🔧 **Extensible Design** - Easy to customize and add new components
+- **Modular Components** - Environment wrappers, replay buffers, neural networks
+- **Training Infrastructure** - Trainer, evaluator, callbacks, and logging
+- **Algorithm Library** - Common RL algorithms (DQN, PPO, SAC, etc.) *(in progress)*
+- **Experiment Tools** - TensorBoard logging, checkpointing, configuration management
+- **Extensible Design** - Easy to customize and add new components
 
 ## Current Status
 
 **Completed:**
-- ✅ Environment wrappers (frame stack, normalization, action repeat, monitoring)
-- ✅ Replay buffers (uniform and prioritized)
-- ✅ Neural network components (MLP, CNN architectures)
-- ✅ Training infrastructure (trainer, evaluator, callbacks)
-- ✅ Utilities (logging, checkpointing, scheduling, seeding)
+-  Environment wrappers (frame stack, normalization, action repeat, monitoring)
+-  Replay buffers (uniform and prioritized)
+-  Neural network components (MLP, CNN architectures)
+-  Training infrastructure (trainer, evaluator, callbacks)
+-  Utilities (logging, checkpointing, scheduling, seeding)
 
 **In Development:**
-- 🚧 Algorithm implementations (templates and skeletons provided)
-- 🚧 Documentation and examples
-- 🚧 Unit tests
+-  Algorithm implementations (templates and skeletons provided)
+-  Documentation and examples
+-  Unit tests
 
 ## Installation
 
