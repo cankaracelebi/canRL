@@ -195,25 +195,6 @@ epsilon = LinearSchedule(start=1.0, end=0.01, duration=10000)
 print(epsilon(5000))  # 0.505
 ```
 
-## Implementing Algorithms
-
-The `algorithms/` folder contains templates and skeletons to guide implementations:
-
-### Available Templates
-
-1. **`_template.py`** - Generic template with structure and hints
-2. **`q_learning.py`** - Tabular Q-Learning skeleton
-3. **`dqn.py`** - Deep Q-Network skeleton
-
-**Note:** These are skeletons with `NotImplementedError` placeholders. Full implementations will be added as the framework matures.
-
-### How to Contribute Algorithms
-
-1. Copy the template: `cp canrl/algorithms/_template.py canrl/algorithms/my_algo.py`
-2. Implement the required methods (see hints in comments)
-3. Test with simple environments (CartPole, FrozenLake)
-4. Submit a PR with your implementation!
-
 ## Roadmap
 
 - [ ] Complete algorithm implementations (DQN, A2C, PPO, SAC, TD3)
