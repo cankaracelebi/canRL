@@ -13,24 +13,9 @@ class BaseAgent(ABC):
     All agent implementations should inherit from this class
     and implement the required methods.
     
-    Your algorithm implementations (Q-Learning, DQN, etc.) should
+    Algorithm implementations (Q-Learning, DQN, etc.) should
     inherit from this class.
     
-    Example:
-        class DQNAgent(BaseAgent):
-            def __init__(self, state_dim, action_dim, ...):
-                self.q_network = ...
-                self.target_network = ...
-                
-            def select_action(self, state, deterministic=False):
-                if not deterministic and np.random.random() < self.epsilon:
-                    return np.random.randint(self.action_dim)
-                return self.q_network(state).argmax()
-                
-            def update(self, batch):
-                # Compute TD loss and update Q-network
-                ...
-                return {"loss": loss, "q_mean": q_values.mean()}
     """
     
     @abstractmethod

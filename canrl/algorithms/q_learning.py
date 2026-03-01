@@ -24,17 +24,7 @@ class QLearningAgent(BaseAgent):
     
     For discrete state and action spaces only.
     
-    TODO: Implement the Q-learning algorithm.
-    
-    Example usage (after you implement):
-        >>> agent = QLearningAgent(
-        ...     state_dim=16,  # e.g., FrozenLake 4x4
-        ...     action_dim=4,
-        ...     learning_rate=0.1,
-        ...     gamma=0.99,
-        ... )
-        >>> action = agent.select_action(state)
-        >>> agent.update_step(state, action, reward, next_state, done)
+
     """
     
     def __init__(
@@ -66,15 +56,9 @@ class QLearningAgent(BaseAgent):
         self.epsilon_end = epsilon_end
         self.epsilon_decay = epsilon_decay
         
-        # TODO: Initialize Q-table
-        # Hint: self.q_table = np.zeros((state_dim, action_dim))
-        self.q_table = None  # YOUR CODE HERE
+
+        self.q_table = np.zeros((state_dim, action_dim)) # state_dim x action dim
         
-        raise NotImplementedError(
-            "QLearningAgent not implemented yet! "
-            "Edit this file to add your implementation."
-        )
-    
     def select_action(self, state: np.ndarray | int, deterministic: bool = False) -> int:
         """
         Select action using epsilon-greedy policy.
@@ -88,21 +72,25 @@ class QLearningAgent(BaseAgent):
         Returns:
             Selected action index.
         """
-        # YOUR CODE HERE
-        # Hint:
-        # if not deterministic and np.random.random() < self.epsilon:
-        #     return np.random.randint(self.action_dim)
-        # return np.argmax(self.q_table[state])
-        raise NotImplementedError()
+        if deterministic or (self.epsilon == 0.0):
+            return np.argmax(self.q_table[state])
+        
+        if np.random.random() < self.epsilon:
+            action = np.random.randint(self.action_dim)
+        
+        else:
+            action = np.argmax(self.q_table[state])
+
+        self.epsilon = max(self.epsilon_end, self.epsilon*self.epsilon_decay)
+
+        return action
     
     def update(self, batch: Batch) -> dict[str, float]:
         """
         Update Q-table using a batch (for compatibility with Trainer).
-        
-        Note: For true tabular Q-learning, you'd typically call
-        update_step() after each environment step instead.
-        """
+        # batch update basically non existing for tabular q -> no buffers no neural nets!
         # TODO: Implement batch update if needed
+        """
         raise NotImplementedError()
     
     def update_step(
@@ -116,28 +104,22 @@ class QLearningAgent(BaseAgent):
         """
         Single-step Q-learning update.
         
-        TODO: Implement the Q-learning update rule.
         
         Q(s,a) <- Q(s,a) + α * (r + γ * max_a' Q(s',a') - Q(s,a))
         
         Returns:
             Dictionary with update metrics.
         """
-        # YOUR CODE HERE
-        # Hint:
-        # if done:
-        #     target = reward
-        # else:
-        #     target = reward + self.gamma * np.max(self.q_table[next_state])
-        # 
-        # td_error = target - self.q_table[state, action]
-        # self.q_table[state, action] += self.learning_rate * td_error
-        # 
-        # # Decay epsilon
-        # self.epsilon = max(self.epsilon_end, self.epsilon * self.epsilon_decay)
-        # 
-        # return {"td_error": abs(td_error), "epsilon": self.epsilon}
-        raise NotImplementedError()
+        if done:
+            target = reward
+        else:
+            target = reward + self.gamma * max(self.q_table[next_state])
+        
+        error  = target - self.q_table[state][action]
+        self.q_table[state][action] += self.learning_rate * error
+
+
+        return {"error": error} # what else?
     
     def save(self, path: str | Path) -> None:
         """Save Q-table and parameters."""

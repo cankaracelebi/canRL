@@ -19,17 +19,20 @@ from canrl import (
 )
 from canrl.buffers import Transition
 from canrl.training import LoggingCallback
-
+from canrl.algorithms import DQN
 
 def main():
     """Run example training."""
     # Configuration
     config = Config(
         env_name="CartPole-v1",
-        total_steps=5000,
+        total_steps=50000,
         warmup_steps=500,
         batch_size=32,
         seed=42,
+        buffer_size=10000,
+    
+        
     )
     
     print("=" * 50)
@@ -80,7 +83,9 @@ def main():
         def eval_mode(self):
             pass
     
-    agent = RandomAgent(action_dim)
+    # agent = RandomAgent(action_dim)
+    agent = DQN(state_dim, action_dim)
+    
     
     # Create replay buffer
     buffer = ReplayBuffer(
@@ -134,15 +139,25 @@ def main():
         print(f"  Mean return: {monitor_stats['mean_return']:.2f}")
         print(f"  Max return: {monitor_stats['max_return']:.2f}")
     
-    print("\n✅ Framework test passed!")
-    print("Now implement your own agent in canrl/algorithms/")
+    print("\n Framework test passed!")
     
     # Save config for reference
     config.save("runs/example_run/config.yaml")
-    
+
     logger.close()
     env.close()
     eval_env.close()
+
+    # Render trained agent
+    print("\n" + "-" * 50)
+    print("Rendering trained agent...")
+    print("-" * 50 + "\n")
+
+    render_env = gym.make(config.env_name, render_mode="human")
+    render_evaluator = Evaluator(render_env, num_episodes=3, render=True)
+    render_stats = render_evaluator.evaluate(agent)
+    print(f"Render eval mean return: {render_stats['mean_return']:.2f}")
+    render_env.close()
 
 
 if __name__ == "__main__":

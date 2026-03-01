@@ -2,7 +2,7 @@
 
 >  **Work in Progress** - This framework is under active development. Core infrastructure is functional, but algorithms are still being implemented.
 
-A modular Reinforcement Learning framework for building and experimenting with RL algorithms.
+A robust Reinforcement Learning framework for building and experimenting with RL algorithms. canRL aims to contain a wide variety of RL algorithms from literature ready to train!
 
 ## Vision
 
@@ -78,50 +78,10 @@ canrl/
 python examples/train_example.py
 ```
 
-This demonstrates the framework with a random agent. Real algorithm implementations coming soon!
 
-### 2. Implement Your Own Algorithm
+### 2. Train Your Agent
 
-Copy the template and implement your algorithm:
 
-```python
-# canrl/algorithms/my_dqn.py
-from canrl.agents import BaseAgent
-from canrl.networks import MLP
-
-class MyDQNAgent(BaseAgent):
-    def __init__(self, state_dim, action_dim, learning_rate=1e-3):
-        self.q_network = MLP(state_dim, action_dim, hidden_dims=(256, 256))
-        self.target_network = MLP(state_dim, action_dim, hidden_dims=(256, 256))
-        # ... your implementation
-    
-    def select_action(self, state, deterministic=False):
-        # Epsilon-greedy action selection
-        ...
-    
-    def update(self, batch):
-        # TD learning update
-        ...
-```
-
-### 3. Train Your Agent
-
-```python
-import gymnasium as gym
-from canrl import ReplayBuffer, Trainer, Logger, Monitor, set_seed
-from canrl.algorithms.my_dqn import MyDQNAgent
-
-# Setup
-set_seed(42)
-env = Monitor(gym.make("CartPole-v1"))
-agent = MyDQNAgent(state_dim=4, action_dim=2)
-buffer = ReplayBuffer(capacity=10000, state_shape=(4,))
-logger = Logger("runs/cartpole_dqn")
-
-# Train
-trainer = Trainer(agent, env, buffer, logger)
-trainer.train(total_steps=50000)
-```
 
 ## Components Reference
 
@@ -257,19 +217,9 @@ The `algorithms/` folder contains templates and skeletons to guide implementatio
 ## Roadmap
 
 - [ ] Complete algorithm implementations (DQN, A2C, PPO, SAC, TD3)
-- [ ] Add comprehensive unit tests
-- [ ] Improve documentation with tutorials
-- [ ] Add more example scripts
+- [ ] Add agent performance tests
 - [ ] Benchmarking suite
 - [ ] Multi-GPU training support
-
-## Contributing
-
-This project is in active development and contributions are highly welcome! Areas needing help:
-- Algorithm implementations
-- Unit tests
-- Documentation
-- Bug reports and feature requests
 
 ## License
 
@@ -277,4 +227,4 @@ MIT License
 
 ## Acknowledgments
 
-This framework is under active development. Star ⭐ the repo to follow progress!
+This framework is under active development. 

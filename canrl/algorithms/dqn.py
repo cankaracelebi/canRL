@@ -1,7 +1,6 @@
 """
-Deep Q-Network (DQN) Agent Skeleton.
+Deep Q-Network (DQN) Agent
 
-TODO: Implement your DQN algorithm here!
 
 DQN uses a neural network to approximate Q-values with:
 - Experience replay for sample efficiency
@@ -9,7 +8,6 @@ DQN uses a neural network to approximate Q-values with:
 
 Reference: "Playing Atari with Deep RL" (Mnih et al., 2013)
 
-This skeleton provides the structure - you fill in the logic.
 """
 
 from typing import Any
@@ -28,14 +26,7 @@ from canrl.utils.schedule import LinearSchedule
 class DQN(BaseAgent):
     """
     Deep Q-Network Agent.
-    
-    
-    Key components to implement:
-    1. Q-network and target network
-    2. Epsilon-greedy action selection
-    3. TD loss computation
-    4. Target network updates (soft or hard)
-    
+
 
     """
     
@@ -80,15 +71,16 @@ class DQN(BaseAgent):
         
         # Q-network (Q)
         self.q_network = None  # YOUR CODE HERE
-        self.q_network = MLP(state_dim, action_dim, hidden_dims,  nn.RELU).to(device)
+        self.q_network = MLP(state_dim, action_dim, hidden_dims,  nn.ReLU).to(device)
         
-        #  Create target network (copy of Q-network) (y_t)
+        #  Create target network (copy of Q-network for y_t)
 
-        self.target_network = MLP(state_dim, action_dim, hidden_dims, nn.RELU).to(device)
-        self.target_network.load_state_dict(self.q_network)
+        self.target_network = MLP(state_dim, action_dim, hidden_dims, nn.ReLU).to(device)
+        self.target_network.load_state_dict(self.q_network.state_dict())
+        self.target_network.eval() # wont be updated via backprop
         
         # used Adam as a generalized practice can be parameterized in the future
-        self.optimizer = nn.optim.Adam(self.q_network.parameters(), lr=learning_rate)
+        self.optimizer = torch.optim.Adam(self.q_network.parameters(), lr=learning_rate)
         
         # Exploration schedule epsilon greedy with linear decay as a simple baseline
         self.epsilon_schedule = LinearSchedule(
@@ -96,6 +88,7 @@ class DQN(BaseAgent):
         )
         
         self._step = 0
+        self._target_update = 0
         self._training = True
         
 
@@ -103,17 +96,14 @@ class DQN(BaseAgent):
     def select_action(self, state: np.ndarray, deterministic: bool = False) -> int:
         """
         Select action using epsilon-greedy policy.
-        
-        TODO: Implement action selection.
-        
+                
         Args:
             state: Current state observation.
-            deterministic: If True, always select greedy action.
+            deterministic: if True, always select greedy action.
             
         Returns:
             Selected action index.
         """
-
         epsilon = 0.0  if deterministic else self.epsilon_schedule(self._step)
         if np.random.random() < epsilon:
             # if random exp is triggered by the random var -> sample from uniform random distrbution
@@ -129,50 +119,70 @@ class DQN(BaseAgent):
     def update(self, batch: Batch) -> dict[str, float]:
         """
         Update Q-network using a batch of experience.
-        
-        TODO: Implement the DQN update.
-        
+                
         Steps:
         1. Compute current Q-values: Q(s, a)
-        2. Compute target: r + γ * max_a' Q_target(s', a')
+        2. Compute target: r + γ * max_a' Q_target(s', a') based on s' being terminal!
         3. Compute TD loss
         4. Backprop and optimize
-        5. Periodically update target network
+        5. Periodically update target network  
         Returns:
             Dictionary with training metrics.
         """
         # 
         # ill get target as that and the q vals and use the batch backprop 
-        # let me 
+
+        criterion = nn.MSELoss()
+        
+        batch_size =  batch.states.size 
+        self._step += batch_size
+        self._target_update += batch_size
+
+        targets = torch.Tensor([])
+        q_s = self.q_network(batch.states)
+        
+        for j in range(batch_size):
+            #TODO: convert this to batched torch operation with lambda func
+
+            next_state = batch.next_states[j]
+            reward = batch.rewards[j]
+            terminal = batch.dones[j]
+
+            if(terminal):
+                torch.cat((targets, reward), 0)
+            else:
+
+                target = reward  + self.gamma * max(self.target_network(next_state)) # target network is in eval mode detach not needed!
+                torch.cat((targets, target), 0)
+        print(targets, q_s)
+        assert(targets.shape == q_s.shape) # this should work !
+        loss = criterion(q_s, targets)
+        loss.backward()
+        self.optimizer.step()
+        self.optimizer.zero_grad()
+        
+        if self._target_update >= self.target_update_frequency:
+            self._update_target_network()
+            self._target_update -= self.target_update_frequency
+
+        return {"q_loss": loss} 
+
+
         
         
-        raise NotImplementedError()
-    
     def _update_target_network(self) -> None:
         """
         Update target network.
         
-        TODO: Implement target network update.
-        
-        For hard update (tau=1.0):
-            target.load_state_dict(q_network.state_dict())
-            
-        For soft update (tau<1.0):
-            target_param = tau * q_param + (1-tau) * target_param
         """
-        # YOUR CODE HERE
-        # Hint:
-        # if self.tau == 1.0:
-        #     self.target_network.load_state_dict(self.q_network.state_dict())
-        # else:
-        #     for target_param, q_param in zip(
-        #         self.target_network.parameters(),
-        #         self.q_network.parameters()
-        #     ):
-        #         target_param.data.copy_(
-        #             self.tau * q_param.data + (1 - self.tau) * target_param.data
-        #         )
-        raise NotImplementedError()
+
+        if self.tau == 1.0:
+            #hard update nice and easy just copy the params
+            self.target_network.load_state_dict(self.q_network.state_dict())
+        else:
+            # keep 1- tau portion of the current network 
+            for target_param, q_param in zip(self.target_network.parameters(), self.q_network.parameters()):
+                target_param.data.copy(self.tau* q_param.data + (1-self.tau) * target_param.data)
     
     def save(self, path: str | Path) -> None:
         """Save agent state."""
