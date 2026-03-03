@@ -20,7 +20,7 @@ from canrl.envs import (
     Monitor,
 )
 from canrl.buffers import ReplayBuffer, PrioritizedReplayBuffer
-from canrl.agents import BaseAgent
+from canrl.algorithms.base import BaseAgent
 from canrl.training import Trainer, Evaluator
 from canrl.utils import Logger, Checkpoint, Config, set_seed
 

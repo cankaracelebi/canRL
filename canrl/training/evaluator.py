@@ -4,7 +4,7 @@ from typing import Any
 import gymnasium as gym
 import numpy as np
 
-from canrl.agents.base_agent import BaseAgent
+from canrl.algorithms.base import BaseAgent
 
 
 class Evaluator:

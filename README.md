@@ -49,8 +49,6 @@ canrl/
 ├── buffers/        # Experience replay
 │   ├── replay_buffer.py    # Uniform sampling
 │   └── prioritized.py      # Prioritized experience replay
-├── agents/         # Agent interfaces
-│   └── base_agent.py       # Abstract base class
 ├── networks/       # Neural network building blocks
 │   ├── mlp.py              # MLP and Dueling networks
 │   └── cnn.py              # Nature CNN, IMPALA CNN
@@ -64,10 +62,15 @@ canrl/
 │   ├── config.py           # Configuration management
 │   ├── schedule.py         # Epsilon/LR schedules
 │   └── seed.py             # Reproducibility
-└── algorithms/     # Algorithm implementations (in progress)
-    ├── _template.py        # Template for new algorithms
-    ├── q_learning.py       # Q-Learning skeleton
-    └── dqn.py              # DQN skeleton
+└── algorithms/     # Algorithm implementations
+    ├── base.py             # BaseAgent abstract class
+    ├── value_based/        # Value-based methods
+    │   ├── q_learning.py   # Tabular Q-Learning
+    │   ├── dqn.py          # Deep Q-Network
+    │   ├── ddqn.py         # Double DQN
+    │   └── masked_dqn.py   # Masked DQN
+    └── policy_gradient/    # Policy gradient & actor-critic
+        └── (PPO, A2C, SAC, TD3 — planned)
 ```
 
 ## Quick Start
@@ -197,10 +200,12 @@ print(epsilon(5000))  # 0.505
 
 ## Roadmap
 
-- [ ] Complete algorithm implementations (DQN, A2C, PPO, SAC, TD3)
+- [ ] Complete value-based algorithms (DQN, DDQN, Dueling DQN, Rainbow)
+- [ ] Implement policy gradient algorithms (REINFORCE, A2C, PPO)
+- [ ] Implement actor-critic algorithms (SAC, TD3, DDPG)
 - [ ] Add agent performance tests
-- [ ] Benchmarking suite
-- [ ] Multi-GPU training support
+- [ ] Benchmarking suite (CartPole, LunarLander, Atari)
+- [ ] Multi-GPU / distributed training support
 
 ## License
 

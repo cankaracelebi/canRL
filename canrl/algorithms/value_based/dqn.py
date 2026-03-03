@@ -17,7 +17,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from canrl.agents.base_agent import BaseAgent
+from canrl.algorithms.base import BaseAgent
 from canrl.buffers.base_buffer import Batch
 from canrl.networks.mlp import MLP
 from canrl.utils.schedule import LinearSchedule

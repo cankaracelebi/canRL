@@ -5,7 +5,7 @@ import time
 import gymnasium as gym
 import numpy as np
 
-from canrl.agents.base_agent import BaseAgent
+from canrl.algorithms.base import BaseAgent
 from canrl.buffers.base_buffer import BaseBuffer, Transition
 from canrl.training.callbacks import Callback, CallbackList
 from canrl.training.evaluator import Evaluator

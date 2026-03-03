@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pickle
 
-from canrl.agents.base_agent import BaseAgent
+from canrl.algorithms.base import BaseAgent
 from canrl.buffers.base_buffer import Batch
 
 
